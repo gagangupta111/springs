@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+	http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+
+    <bean id="ExcelOutputGenerator" class="com.spring.ExcelOutputGenerator" />
+
+    <bean id="customerService" class="com.spring.aop.CustomerService">
+        <property name="name" value="gagan gupta" />
+        <property name="url" value="ExploringOneself" />
+    </bean>
+
+    <bean id="hijackBeforeMethodBean" class="com.spring.aop.HijackBeforeMethod" />
+    <bean id="HijackAroundMethod" class="com.spring.aop.HijackAroundMethod" />
+
+    <bean id="customerPointcut"
+          class="org.springframework.aop.support.NameMatchMethodPointcut">
+        <property name="mappedName" value="printName" />
+    </bean>
+
+    <bean id="customerAdvisor"
+          class="org.springframework.aop.support.DefaultPointcutAdvisor">
+        <property name="pointcut" ref="customerPointcut" />
+        <property name="advice" ref="HijackAroundMethod" />
+    </bean>
+
+    <bean
+            class="org.springframework.aop.framework.autoproxy.BeanNameAutoProxyCreator">
+        <property name="beanNames">
+            <list>
+                <value>*Service</value>
+            </list>
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>customerAdvisor</value>
+            </list>
+        </property>
+    </bean>
+
+
+
+
+
+    <bean id="OutputHelper" class="com.spring.OutputHelper">
+        <property name="outputGenerator" ref="ExcelOutputGenerator" />
+    </bean>
+
+    <context:component-scan base-package="com.spring.autowire" />
+
+    <bean class="org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor"/>
+
+    <bean id="CustomerBean" class="com.spring.autowire.Customer">
+        <property name="action" value="buy" />
+        <property name="type" value="1" />
+    </bean>
+
+    <bean id="PersonBean" class="com.spring.autowire.Person">
+        <property name="name" value="spring" />
+        <property name="address" value="22" />
+        <property name="age" value="29" />
+    </bean>
+
+</beans>
